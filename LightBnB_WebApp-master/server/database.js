@@ -1,4 +1,4 @@
-const db = require('../server/db/db');
+const db = require('./db');
 
 
 /// Users
