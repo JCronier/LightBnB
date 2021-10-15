@@ -128,24 +128,28 @@ const getAllProperties = (options, limit = 10) => {
   JOIN property_reviews ON properties.id = property_id
   `;
 
+  // filter city
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     queryKeys.push("city");
     queryOptions.city += `${queryParams.length}`;
   }
 
+  // filter owner id
   if (options.owner_id) {
     queryParams.push(options.owner_id);
     queryKeys.push("owner_id");
     queryOptions.owner_id += `${queryParams.length}`;
   }
 
+  // filter minimum price
   if (options.minimum_price_per_night) {
     queryParams.push(options.minimum_price_per_night * 100);
     queryKeys.push("minimum_price_per_night");
     queryOptions.minimum_price_per_night += `${queryParams.length}`;
   }
 
+  // filter maximum price
   if (options.maximum_price_per_night) {
     queryParams.push(options.maximum_price_per_night * 100);
     queryKeys.push("maximum_price_per_night");
@@ -154,6 +158,7 @@ const getAllProperties = (options, limit = 10) => {
 
   // Filter options exist
   if (queryParams.length > 0) {
+
     // first option after a WHERE
     queryString += `WHERE ${queryOptions[queryKeys[0]]} `;
 
@@ -165,6 +170,7 @@ const getAllProperties = (options, limit = 10) => {
 
   queryString += `GROUP BY properties.id `;
 
+  // filter rating
   if (options.minimum_rating) {
     queryParams.push(options.minimum_rating);
     queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length}`;
@@ -194,6 +200,8 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
+
+  // convert to cents
   property.cost_per_night *= 100;
   const query = `
   INSERT INTO properties ( 
